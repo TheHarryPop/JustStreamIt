@@ -81,6 +81,10 @@ h2 {
 	text-align: center;
 }
 
+.best_img {
+	width: 30%;
+}
+
 img {
 	max-width: 100%;
 	border: solid pink;
