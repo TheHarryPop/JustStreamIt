@@ -79,7 +79,10 @@ function img_movie(id, category) {
             movie_img.setAttribute("id", "movie_img_" + id);
             movie_img.setAttribute("class", "best_img");
             movie_img.setAttribute("src", img);
+            movie_img.setAttribute("alt", "movie_img_" + id)
+            movie_img.setAttribute("onclick", "modal(" + id + ")")
             section.appendChild(movie_img);
+            createModal(data, id);
         });
     } 
     else {
@@ -87,10 +90,10 @@ function img_movie(id, category) {
             let data = await response.json();
             let img = data.image_url;
             let container = document.getElementById("slideShowContainer_" + category);
-            let test = document.getElementsByClassName("Slide_" + category + " fade");
+            let test = document.getElementsByClassName("Slide_" + category);
             let movie = document.createElement("div");
             movie.setAttribute("id", "Slide_" + id);
-            movie.setAttribute("class", "Slide_" + category + " fade");
+            movie.setAttribute("class", "Slide_" + category);
             if (test.length < 4) {
                 movie.setAttribute("style", "display: block")
             }
@@ -99,9 +102,11 @@ function img_movie(id, category) {
             movie_img.setAttribute("id", "movie_img_" + id);
             movie_img.setAttribute("class", "movie_img");
             movie_img.setAttribute("src", img);
+            movie_img.setAttribute("alt", "movie_img_" + id)
+            movie_img.setAttribute("onclick", "modal(" + id + ")")
             movie.appendChild(movie_img);
             container.appendChild(movie);
-
+            createModal(data, id);
         });
     }
 
@@ -155,7 +160,7 @@ let slideIndex = 0;
 function showSlides(category) {
 
     const toShow = 4;
-    const slides = document.getElementsByClassName("Slide_" + category + " fade" );
+    const slides = document.getElementsByClassName("Slide_" + category);
     const totalSlides = slides.length;
 
     for (let slide of slides) {
@@ -203,14 +208,93 @@ function plusSlides(n, category){
 
     showSlides(category)
     }
+}  
+/*************************************************************
+****************************Modal****************************/  
+function createModal(data, id) {
+    let modal = document.createElement("div");
+    modal.setAttribute("id", "Modal_" + id);
+    modal.setAttribute("class", "modal");
+    let modal_content = document.createElement("div");
+    modal_content.setAttribute("class", "modal_content");
+    let title = document.createElement("p");
+    let title_content = document.createTextNode("Title : " + data.title);
+    title.appendChild(title_content);
+    let close = document.createElement("span");
+    close.setAttribute("id", "close_" + id);
+    close.setAttribute("class", "close");
+    let close_content = document.createTextNode("×");
+    close.appendChild(close_content);
+    let image_url = document.createElement("img");
+    image_url.setAttribute("alt", "img_" + id);
+    image_url.setAttribute("src", data.image_url);
+    let genres = document.createElement("p");
+    let genres_content = document.createTextNode("Genres : " + data.genres);
+    genres.appendChild(genres_content);
+    let date_published = document.createElement("p");
+    let date_published_content = document.createTextNode("Date published : " + data.date_published);
+    date_published.appendChild(date_published_content);
+    let rated = document.createElement("p");
+    let rated_content = document.createTextNode("Rated : " + data.rated);
+    rated.appendChild(rated_content);
+    let imdb_score = document.createElement("p");
+    let imdb_score_content = document.createTextNode("IMDB score : " + data.imdb_score);
+    imdb_score.appendChild(imdb_score_content);
+    let directors = document.createElement("p");
+    let directors_content = document.createTextNode("Directors : " + data.directors);
+    directors.appendChild(directors_content);
+    let actors = document.createElement("p");
+    let actors_content = document.createTextNode("Actors : " + data.actors);
+    actors.appendChild(actors_content);
+    let duration = document.createElement("p");
+    let duration_content = document.createTextNode("Duration : " + data.duration + " minutes")
+    duration.appendChild(duration_content);
+    let countries = document.createElement("p");
+    let countries_content = document.createTextNode("Countries : " + data.countries)
+    countries.appendChild(countries_content);
+    let worldwide_gross_income = document.createElement("p");
+    let worldwide_gross_income_content = document.createTextNode("Worldwide gross income : " + data.worldwide_gross_income);
+    worldwide_gross_income.appendChild(worldwide_gross_income_content);
+    let long_description = document.createElement("p");
+    let long_description_content = document.createTextNode("Long description : " + data.long_description);
+    long_description.appendChild(long_description_content);
+    modal_content.appendChild(title);
+    modal_content.appendChild(close);
+    modal_content.appendChild(image_url);
+    modal_content.appendChild(genres);
+    modal_content.appendChild(date_published);
+    modal_content.appendChild(rated);
+    modal_content.appendChild(imdb_score);
+    modal_content.appendChild(directors);
+    modal_content.appendChild(actors);
+    modal_content.appendChild(duration);
+    modal_content.appendChild(countries);
+    modal_content.appendChild(worldwide_gross_income);
+    modal_content.appendChild(long_description);
+    modal.appendChild(modal_content);
+    document.body.appendChild(modal);
 }
 
-//ShowSlides("Best_rating");
-//ShowSlides("Comedy");
-//ShowSlides("Action");
-//ShowSlides("Romance");
+function modal(id) {
+    let modal = document.getElementById("Modal_" + id);
+    let span = document.getElementById("close_" + id);
 
-    
+    modal.style.display = "block";
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+}
+
+
 /*************************************************************
 ********************Lancement du script**********************/
 categories = ["Best_movie",
