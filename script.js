@@ -31,7 +31,7 @@ async function getData(category) {
             }
         createSkeleton(category);
         ids.forEach(async id => { 
-        await data_movie(id, category)});
+        await img_movie(id, category)});
         ids = [];
         }
         else { 
@@ -58,41 +58,55 @@ async function getData(category) {
         } 
         createSkeleton(category);
         ids.forEach(async id => { 
-        await data_movie(id, category)});
+        await img_movie(id, category)});
         ids = [];
-        }
-    }) 
+        }        
+    })
+    async category => {await showSlides(category)}
 }
+
 /*************************************************************
 **********Récupération des informations pour un film*********/
-function data_movie(id, category) {
+function img_movie(id, category) {
     url = "http://localhost:8000/api/v1/titles/" + id;
-    fetch(url).then(async function(response) {
-        let data = await response.json();
-        let data_dict = {"image_url": data.image_url, "title": data.title, "genres": data.genres, "date_published": data.date_published, "rated": data.rated, "imdb_score": data.imdb_score, "directors": data.directors, "actors": data.actors, "duration": data.duration, "countries": data.countries, "worldwide_gross_income": data.worldwide_gross_income, "long_description": data.long_description};
-        if (category !== "Best_movie") {
-            let container = document.getElementById("slideShowContainer_" + category);
-            let movie = document.createElement("div");
-            movie.setAttribute("id", "mySlide_" + category + "_" + id)
-            movie.setAttribute("class", "mySlides_" + category + " fade");
-            let movie_img = document.createElement("img");
-            movie_img.setAttribute("id", "movie_img_" + id);
-            movie_img.setAttribute("class", "movie_img");
-            movie_img.setAttribute("src", data.image_url);
-            movie.appendChild(movie_img);
-            container.appendChild(movie);
-        }
-        else {
+
+    if (category === "Best_movie") {
+        fetch(url).then(async function(response) {
+            let data = await response.json();
+            let img = data.image_url;
             let section = document.getElementById("Best_movie_section");
             let movie_img = document.createElement("img");
             movie_img.setAttribute("id", "movie_img_" + id);
             movie_img.setAttribute("class", "best_img");
-            movie_img.setAttribute("src", data.image_url);
+            movie_img.setAttribute("src", img);
             section.appendChild(movie_img);
-        }
-        
-    });
+        });
+    } 
+    else {
+        fetch(url).then(async function(response) {
+            let data = await response.json();
+            let img = data.image_url;
+            let container = document.getElementById("slideShowContainer_" + category);
+            let test = document.getElementsByClassName("Slide_" + category + " fade");
+            let movie = document.createElement("div");
+            movie.setAttribute("id", "Slide_" + id);
+            movie.setAttribute("class", "Slide_" + category + " fade");
+            if (test.length < 4) {
+                movie.setAttribute("style", "display: block")
+            }
+            else {movie.setAttribute("style", "display: none")}
+            let movie_img = document.createElement("img");
+            movie_img.setAttribute("id", "movie_img_" + id);
+            movie_img.setAttribute("class", "movie_img");
+            movie_img.setAttribute("src", img);
+            movie.appendChild(movie_img);
+            container.appendChild(movie);
+
+        });
+    }
+
 }
+
 /*************************************************************
 ********************Création du squelette********************/
 function createSkeleton(category) {
@@ -118,13 +132,13 @@ function createSkeleton(category) {
         container.setAttribute("class", "slideShowContainer");
         let prev = document.createElement("a");
         prev.setAttribute("class", "prev");
-        prev.setAttribute("onclick", plusSlides(-1, category));
+        prev.setAttribute("onclick", "plusSlides(-1, " + "'" + category + "'" + ")");
         let prev_button = String.fromCharCode(10094);
         let prev_contents = document.createTextNode(prev_button)
         prev.appendChild(prev_contents);
         let next = document.createElement("a");
         next.setAttribute("class", "next");
-        next.setAttribute("onclick", plusSlides(1, category));
+        next.setAttribute("onclick", "plusSlides(1, " + "'" + category + "'" + ")");
         let next_button = String.fromCharCode(10095);
         let next_contents = document.createTextNode(next_button)
         next.appendChild(next_contents);
@@ -136,97 +150,67 @@ function createSkeleton(category) {
 
 /*************************************************************
 ***************************Carousel**************************/
-let slideIndex = 1;
-showSlides(slideIndex);
+let slideIndex = 0;
 
-// Next/previous controls
-function plusSlides(n) {
-  showSlides(slideIndex += n);
-}
+function showSlides(category) {
 
-// Thumbnail image controls
-function currentSlide(n) {
-  showSlides(slideIndex = n);
-}
+    const toShow = 4;
+    const slides = document.getElementsByClassName("Slide_" + category + " fade" );
+    const totalSlides = slides.length;
 
-function showSlides(n) {
-    let count = slideIndex;
-    let slide_1 = count;
-    let slide_2 = count + 1;
-    let slide_3 = count + 2;
-    let slide_4 = count + 3;
-    let img_1 = document.getElementById("img_1");
-    let img_2 = document.getElementById("img_2");
-    let img_3 = document.getElementById("img_3");
-    let img_4 = document.getElementById("img_4");
+    for (let slide of slides) {
+        slide.style.display = "none";
+    }
 
-    //if (slideIndex < 1) {slideIndex = 7}
-    //if (slideIndex > 7) {slideIndex = 1}
-    if (slideIndex > 4) {
-        if (slideIndex === 5) {slide_4 = count - 4}
-        else if (slideIndex === 6) {
-            slide_4 = count - 4;
-            slide_3 = count - 5;
-        }
-        else if (slideIndex === 7) {
-            slide_4 = count - 4;
-            slide_3 = count - 5;
-            slide_2 = count - 6;
+    if (slideIndex === -1) {
+        slideIndex = 3;
+
+        slides[slideIndex].style.display = "block";
+        slides[slideIndex+1].style.display = "block";
+        slides[slideIndex+2].style.display = "block";
+        slides[slideIndex+3].style.display = "block";
+    }
+    else
+    {
+        slides[slideIndex].style.display = "block";
+        slides[slideIndex+1].style.display = "block";
+        slides[slideIndex+2].style.display = "block";
+        slides[slideIndex+3].style.display = "block";
+    }
+    if (slides[slideIndex + toShow] === undefined || slideIndex >= totalSlides) {
+        slideIndex = -1;
+    }
+
+} 
+
+function plusSlides(n, category){
+
+    if (n === 1) {
+        slideIndex++;
+        showSlides(category)
+    }
+    
+    else {
+        if (slideIndex === -1) {
+            slideIndex = 2;
+        } 
+        else if (slideIndex === 0) {
+            slideIndex = -1
         }
         else {
-            slideIndex = 1;
-            count = slideIndex;
-            n = count;
-            slide_1 = count;
-            slide_2 = count + 1;
-            slide_3 = count + 2;
-            slide_4 = count + 3;
+            slideIndex--;
         }
+
+    showSlides(category)
     }
-    else if (slideIndex < 1) {
-        if (slideIndex === 0) {slide_1 = count + 7}
-        else if (slideIndex === -1) {
-            slide_1 = count + 7
-            slide_2 = count + 8
-        }
-        else if (slideIndex === -2) {
-            slide_1 = count + 7
-            slide_2 = count + 8
-            slide_3 = count + 9
-        }
-        else if (slideIndex === -3) {
-            slide_1 = count + 7
-            slide_2 = count + 8
-            slide_3 = count + 9
-            slide_4 = count + 10
-        }
-        else if (slideIndex === -4) {
-            slide_1 = count + 7
-            slide_2 = count + 8
-            slide_3 = count + 9
-            slide_4 = count + 10
-        }
-        else if (slideIndex === -5) {
-            slide_1 = count + 7
-            slide_2 = count + 8
-            slide_3 = count + 9
-            slide_4 = count + 10
-        }
-        else {
-            slideIndex = 1;
-            count = slideIndex;
-            n = count;
-            slide_1 = count;
-            slide_2 = count + 1;
-            slide_3 = count + 2;
-            slide_4 = count + 3;
-        }
-    }
-    img_1.setAttribute("src", "img" + slide_1 + ".jpg");
-    img_2.setAttribute("src", "img" + slide_2 + ".jpg");
-    img_3.setAttribute("src", "img" + slide_3 + ".jpg");
-    img_4.setAttribute("src", "img" + slide_4 + ".jpg");
 }
+
+//ShowSlides("Best_rating");
+//ShowSlides("Comedy");
+//ShowSlides("Action");
+//ShowSlides("Romance");
+
+    
 /*************************************************************
 ********************Lancement du script**********************/
 categories = ["Best_movie",
